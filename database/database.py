@@ -61,7 +61,13 @@ def add_department(conn, department_name):
 def view_departments(conn):
     cursor = conn.cursor()
 
-    cursor.execute("SELECT * FROM Department")
+    cursor.execute("""
+    SELECT
+        id,
+        department_name
+    FROM Department
+    ORDER BY department_name
+""")
 
     departments = cursor.fetchall()
 
@@ -130,3 +136,95 @@ def add_student(
     conn.commit()
 
     return True
+
+
+def view_students(conn):
+    cursor = conn.cursor()
+
+    cursor.execute("""
+    SELECT
+        Student.roll_no,
+        Student.first_name,
+        Student.last_name,
+        Student.age,
+        Student.gender,
+        Student.email,
+        Student.phone,
+        Department.department_name
+    FROM Student
+    INNER JOIN Department
+    ON Student.department_id = Department.id
+    ORDER BY Student.roll_no
+""")
+
+    students = cursor.fetchall()
+
+    return students
+
+
+def search_student(conn, roll_no):
+    cursor = conn.cursor()
+
+    cursor.execute("""
+        SELECT
+            Student.roll_no,
+            Student.first_name,
+            Student.last_name,
+            Student.age,
+            Student.gender,
+            Student.email,
+            Student.phone,
+            Department.department_name
+        FROM Student
+        INNER JOIN Department
+        ON Student.department_id = Department.id
+        WHERE Student.roll_no = ?
+    """, (roll_no,))
+
+    student = cursor.fetchone()
+
+    return student
+
+
+def update_student(
+    conn,
+    roll_no,
+    first_name,
+    last_name,
+    age,
+    gender,
+    email,
+    phone,
+    department_id
+):
+    cursor = conn.cursor()
+
+    cursor.execute("""
+        UPDATE Student
+        SET
+            first_name = ?,
+            last_name = ?,
+            age = ?,
+            gender = ?,
+            email = ?,
+            phone = ?,
+            department_id = ?
+        WHERE roll_no = ?
+    """, (
+        first_name,
+        last_name,
+        age,
+        gender,
+        email,
+        phone,
+        department_id,
+        roll_no
+    ))
+
+    conn.commit()
+
+    return True
+
+
+
+    

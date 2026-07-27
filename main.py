@@ -1,16 +1,34 @@
 from database import database
 
+
+def display_student(student):
+    print("\n" + "-" * 40)
+    print(f"Roll No    : {student[0]}")
+    print(f"Name       : {student[1]} {student[2]}")
+    print(f"Age        : {student[3]}")
+    print(f"Gender     : {student[4]}")
+    print(f"Email      : {student[5]}")
+    print(f"Phone      : {student[6]}")
+    print(f"Department : {student[7]}")
+    print("-" * 40 + "\n")
+
+
 conn = database.connect_database()
 database.create_tables(conn)
 
+
 while True:
     print("""
-===== Student Management System =====
+========================================
+      Student Management System
+========================================
 1. Add Department
 2. View Departments
 3. Add Student
 4. View Students
-5. Exit
+5. Search Student
+6. Update Student
+7. Exit
 """)
 
     try:
@@ -25,15 +43,15 @@ while True:
         success = database.add_department(conn, department_name)
 
         if success:
-            print("Department added successfully.")
+            print("\n✓ Department added successfully.\n")
         else:
-            print("Department already exists.")
+            print("\n✗ Department already exists.\n")
 
     elif command == 2:
         departments = database.view_departments(conn)
 
         if not departments:
-            print("No departments found.")
+            print("\nNo departments found.\n")
         else:
             print("\nDepartments:")
             for department in departments:
@@ -43,7 +61,7 @@ while True:
         departments = database.view_departments(conn)
 
         if not departments:
-            print("No departments found.")
+            print("\nNo departments found.\n")
             continue
 
         print("\nDepartments:")
@@ -54,7 +72,7 @@ while True:
             department_id = int(input("Enter Department ID: "))
             age = int(input("Enter Age: "))
         except ValueError:
-            print("Department ID and Age must be numbers.")
+            print("\nDepartment ID and Age must be numbers.\n")
             continue
 
         roll_no = input("Enter Roll Number: ")
@@ -77,14 +95,75 @@ while True:
         )
 
         if success:
-            print("Student added successfully.")
+            print("\n✓ Student added successfully.\n")
         else:
-            print("Student could not be added. Check the department ID or roll number.")
+            print("\n✗ Student could not be added. Check the Department ID or Roll Number.\n")
 
     elif command == 4:
-        print("View Students - Coming Tomorrow!")
+        students = database.view_students(conn)
 
+        if not students:
+            print("\nNo students found.\n")
+        else:
+            for student in students:
+                display_student(student)
+                
+    
     elif command == 5:
+        roll_no = input("Enter the roll no of student you want to search: ")
+        student = database.search_student(conn,roll_no)
+        if student:
+            display_student(student)
+        else:
+            print(f"\nNo student found with Roll Number '{roll_no}'.\n")
+        
+
+    elif command == 6:
+        roll_no = input("Enter the Roll Number of the student you want to update: ")
+
+        student = database.search_student(conn, roll_no)
+
+        if not student:
+            print(f"\nNo student found with Roll Number '{roll_no}'.\n")
+        else:
+            display_student(student)
+
+            departments = database.view_departments(conn)
+
+            print("\nDepartments:")
+            for department in departments:
+                 print(f"{department[0]} - {department[1]}")
+
+            first_name = input("Enter New First Name: ")
+            last_name = input("Enter New Last Name: ")
+            gender = input("Enter New Gender: ")
+            email = input("Enter New Email: ")
+            phone = input("Enter New Phone Number: ")
+
+            try:
+                age = int(input("Enter New Age: "))
+                department_id = int(input("Enter Department ID: "))
+            except ValueError:
+                print("\nAge and Department ID must be numbers.\n")
+                continue
+
+            success = database.update_student(
+                conn,
+                roll_no,
+                first_name,
+                last_name,
+                age,
+                gender,
+                email,
+                phone,
+                department_id
+                )
+
+            if success:
+                print("\n✓ Student updated successfully.\n")
+            
+    
+    elif command == 7:
         conn.close()
         print("Goodbye!")
         break
