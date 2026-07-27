@@ -176,7 +176,7 @@ while True:
             if choice == "Y":
                 success = database.delete_student(conn,roll_no)
                 if success:
-                    print("✓ Student deleted successfully.")
+                    print(f"\n✓ Student '{roll_no}' deleted successfully.\n")
             elif choice == "N":
                 print("\nDeletion cancelled.\n")
             else:
