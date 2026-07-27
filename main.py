@@ -28,7 +28,8 @@ while True:
 4. View Students
 5. Search Student
 6. Update Student
-7. Exit
+7. Delete Student
+8. Exit
 """)
 
     try:
@@ -161,9 +162,27 @@ while True:
 
             if success:
                 print("\n✓ Student updated successfully.\n")
-            
-    
+     
     elif command == 7:
+         roll_no = input("Enter the Roll Number of the student you want to delete: ")
+     
+         student = database.search_student(conn, roll_no)
+     
+         if not student:
+             print(f"\nNo student found with Roll Number '{roll_no}'.\n")
+         else:
+            display_student(student)  
+            choice = input("Are you sure you want to delete this student? (Y/N): ").upper()   
+            if choice == "Y":
+                success = database.delete_student(conn,roll_no)
+                if success:
+                    print("✓ Student deleted successfully.")
+            elif choice == "N":
+                print("\nDeletion cancelled.\n")
+            else:
+                print("\nInvalid choice. Please enter Y or N.\n")
+    
+    elif command == 8:
         conn.close()
         print("Goodbye!")
         break

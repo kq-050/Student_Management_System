@@ -226,5 +226,14 @@ def update_student(
     return True
 
 
+def delete_student(conn, roll_no):
+    cursor = conn.cursor()
 
-    
+    cursor.execute("""
+        DELETE FROM Student
+        WHERE roll_no = ?
+    """, (roll_no,))
+
+    conn.commit()
+
+    return True
