@@ -1,77 +1,107 @@
 import sqlite3
-
+from logger import logger
 
 def connect_database():
-    conn = sqlite3.connect("student.db")
+    try:
+        conn = sqlite3.connect("student.db")
 
-    # Enable foreign key constraints
-    conn.execute("PRAGMA foreign_keys = ON")
+         # Enable foreign key constraints
+        conn.execute("PRAGMA foreign_keys = ON")
 
-    return conn
+        return conn
+    
+    except sqlite3.Error as error:
+        logger.error(error)
+        return None
 
 
 def create_tables(conn):
     cursor = conn.cursor()
 
-    cursor.executescript("""
-        CREATE TABLE IF NOT EXISTS Department(
-            id INTEGER PRIMARY KEY,
-            department_name TEXT UNIQUE NOT NULL
-        );
+    try:
+        cursor.executescript("""
+            CREATE TABLE IF NOT EXISTS Department(
+             id INTEGER PRIMARY KEY,
+             department_name TEXT UNIQUE NOT NULL
+            );
 
-        CREATE TABLE IF NOT EXISTS Student(
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            roll_no TEXT UNIQUE NOT NULL,
-            first_name TEXT NOT NULL,
-            last_name TEXT NOT NULL,
-            age INTEGER NOT NULL,
-            gender TEXT NOT NULL,
-            email TEXT UNIQUE,
-            phone TEXT,
-            department_id INTEGER REFERENCES Department(id)
-        );
-    """)
+            CREATE TABLE IF NOT EXISTS Student(
+             id INTEGER PRIMARY KEY AUTOINCREMENT,
+             roll_no TEXT UNIQUE NOT NULL,
+             first_name TEXT NOT NULL,
+             last_name TEXT NOT NULL,
+             age INTEGER NOT NULL,
+             gender TEXT NOT NULL,
+             email TEXT UNIQUE,
+             phone TEXT,
+             department_id INTEGER REFERENCES Department(id)
+             );
+         """)
 
-    conn.commit()
+        conn.commit()
+        
+        return True
+    
+    except sqlite3.Error as error:
+        logger.error(error)
+        conn.rollback()
+        return False
 
 
 def add_department(conn, department_name):
     cursor = conn.cursor()
-
-    cursor.execute(
-        "SELECT * FROM Department WHERE department_name = ?",
+    
+    try:
+        cursor.execute(
+        "SELECT id FROM Department WHERE department_name = ?",
         (department_name,)
-    )
+        )
 
-    department = cursor.fetchone()
+        department = cursor.fetchone()
 
-    if department:
-        return False
+        if department:
+            return False
 
-    cursor.execute(
+        cursor.execute(
         "INSERT INTO Department (department_name) VALUES (?)",
         (department_name,)
-    )
+        )
 
-    conn.commit()
+        conn.commit()
+        logger.info(f"Department {department_name} added successfully")
 
-    return True
+        return True
+    
+    except sqlite3.IntegrityError as error:
+        logger.error(error)
+        conn.rollback()
+        return False
+        
+    except sqlite3.Error as error:
+        logger.error(error)
+        conn.rollback()
+        return False
 
 
 def view_departments(conn):
     cursor = conn.cursor()
+    try:
+        
+        cursor.execute("""
+         SELECT
+           id,
+           department_name
+         FROM Department
+         ORDER BY department_name
+        """)
 
-    cursor.execute("""
-    SELECT
-        id,
-        department_name
-    FROM Department
-    ORDER BY department_name
-""")
+        departments = cursor.fetchall()
 
-    departments = cursor.fetchall()
-
-    return departments
+        return departments
+    
+    except sqlite3.Error as error:
+        logger.error(error)
+        return False
 
 
 def add_student(
@@ -87,42 +117,44 @@ def add_student(
 ):
     cursor = conn.cursor()
 
+
+    try:
     # Check department exists
-    cursor.execute(
-        "SELECT * FROM Department WHERE id = ?",
+        cursor.execute(
+        "SELECT id FROM Department WHERE id = ?",
         (department_id,)
-    )
+        )
 
-    department = cursor.fetchone()
+        department = cursor.fetchone()
 
-    if not department:
-        return False
+        if not department:
+            return False
 
     # Check duplicate roll number
-    cursor.execute(
-        "SELECT * FROM Student WHERE roll_no = ?",
-        (roll_no,)
-    )
+        cursor.execute(
+            "SELECT id FROM Student WHERE roll_no = ?",
+            (roll_no,)
+        )
 
-    student = cursor.fetchone()
+        student = cursor.fetchone()
 
-    if student:
-        return False
+        if student:
+            return False
 
     # Insert student
-    cursor.execute("""
-        INSERT INTO Student(
-            roll_no,
-            first_name,
-            last_name,
-            age,
-            gender,
-            email,
-            phone,
-            department_id
-        )
+        cursor.execute("""
+            INSERT INTO Student(
+             roll_no,
+             first_name,
+             last_name,
+             age,
+             gender,
+             email,
+             phone,
+             department_id
+            )
         VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-    """, (
+        """, (
         roll_no,
         first_name,
         last_name,
@@ -131,42 +163,61 @@ def add_student(
         email,
         phone,
         department_id
-    ))
+         ))
 
-    conn.commit()
+        conn.commit()
+        logger.info(f"Student {roll_no} added successfully")
 
-    return True
+        return True
+    
+    except sqlite3.IntegrityError as error:
+        logger.error(error)
+        conn.rollback()
+        return False
+    
+    except sqlite3.Error as error:
+        logger.error(error)
+        conn.rollback()
+        return False
 
 
 def view_students(conn):
     cursor = conn.cursor()
 
-    cursor.execute("""
-    SELECT
-        Student.roll_no,
-        Student.first_name,
-        Student.last_name,
-        Student.age,
-        Student.gender,
-        Student.email,
-        Student.phone,
-        Department.department_name
-    FROM Student
-    INNER JOIN Department
-    ON Student.department_id = Department.id
-    ORDER BY Student.roll_no
-""")
+    try:
+        
+        cursor.execute("""
+        SELECT
+         Student.roll_no,
+         Student.first_name,
+         Student.last_name,
+         Student.age,
+         Student.gender,
+         Student.email,
+         Student.phone,
+         Department.department_name
+        FROM Student
+        INNER JOIN Department
+        ON Student.department_id = Department.id
+        ORDER BY Student.roll_no
+        """)
 
-    students = cursor.fetchall()
+        students = cursor.fetchall()
 
-    return students
+        return students
+ 
+    except sqlite3.Error as error:
+        logger.error(error)
+        return False
 
 
 def search_student(conn, roll_no):
     cursor = conn.cursor()
 
-    cursor.execute("""
-        SELECT
+    
+    try:
+        cursor.execute("""
+         SELECT
             Student.roll_no,
             Student.first_name,
             Student.last_name,
@@ -175,15 +226,19 @@ def search_student(conn, roll_no):
             Student.email,
             Student.phone,
             Department.department_name
-        FROM Student
-        INNER JOIN Department
-        ON Student.department_id = Department.id
-        WHERE Student.roll_no = ?
-    """, (roll_no,))
+         FROM Student
+         INNER JOIN Department
+         ON Student.department_id = Department.id
+          WHERE Student.roll_no = ?
+     """, (roll_no,))
 
-    student = cursor.fetchone()
+        student = cursor.fetchone()
 
-    return student
+        return student
+    
+    except sqlite3.Error as error:
+        logger.error(error)
+        return False
 
 
 def update_student(
@@ -199,41 +254,76 @@ def update_student(
 ):
     cursor = conn.cursor()
 
-    cursor.execute("""
-        UPDATE Student
-        SET
-            first_name = ?,
-            last_name = ?,
-            age = ?,
-            gender = ?,
-            email = ?,
-            phone = ?,
-            department_id = ?
-        WHERE roll_no = ?
-    """, (
-        first_name,
-        last_name,
-        age,
-        gender,
-        email,
-        phone,
-        department_id,
-        roll_no
-    ))
+    try:
+        cursor.execute("""
+            UPDATE Student
+            SET
+                first_name = ?,
+                last_name = ?,
+                age = ?,
+                gender = ?,
+                email = ?,
+                phone = ?,
+                department_id = ?
+            WHERE roll_no = ?
+        """, (
+            first_name,
+            last_name,
+            age,
+            gender,
+            email,
+            phone,
+            department_id,
+            roll_no
+        ))
 
-    conn.commit()
+        # Check if any student was updated
+        if cursor.rowcount == 0:
+            conn.rollback()
+            return False
 
-    return True
+        conn.commit()
+        logger.info(f"Student {roll_no} updated successfully")
 
+        return True
+
+    except sqlite3.IntegrityError as error:
+        logger.error(error)
+        conn.rollback()
+        return False
+
+    except sqlite3.Error as error:
+        logger.error(error)
+        conn.rollback()
+        return False
+    
+    
 
 def delete_student(conn, roll_no):
     cursor = conn.cursor()
 
-    cursor.execute("""
-        DELETE FROM Student
-        WHERE roll_no = ?
-    """, (roll_no,))
+    try:
+        cursor.execute("""
+            DELETE FROM Student
+            WHERE roll_no = ?
+        """, (roll_no,))
 
-    conn.commit()
+        # Check if any student was deleted
+        if cursor.rowcount == 0:
+            conn.rollback()
+            return False
 
-    return True
+        conn.commit()
+        logger.info(f"Student {roll_no} deleted successfully")
+
+        return True
+
+    except sqlite3.IntegrityError as error:
+        logger.error(error)
+        conn.rollback()
+        return False
+
+    except sqlite3.Error as error:
+        logger.error(error)
+        conn.rollback()
+        return False

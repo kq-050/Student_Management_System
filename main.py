@@ -1,5 +1,5 @@
 from database import database
-
+import validators
 
 def display_student(student):
     print("\n" + "-" * 40)
@@ -14,6 +14,11 @@ def display_student(student):
 
 
 conn = database.connect_database()
+if conn is None:
+    print("Database connection failed.")
+    exit()
+    
+    
 database.create_tables(conn)
 
 
@@ -76,12 +81,62 @@ while True:
             print("\nDepartment ID and Age must be numbers.\n")
             continue
 
+        #Age
+        is_valid, result = validators.validate_age(age)
+        if not is_valid:
+            print(f"\n✗ {result}\n")
+            continue
+        age = result
+        
+        #Roll Number
         roll_no = input("Enter Roll Number: ")
+        is_valid, result = validators.validate_roll_no(roll_no)
+
+        if not is_valid:
+            print(f"\n✗ {result}\n")
+            continue
+
+        roll_no = result
+        
+        #First Name
         first_name = input("Enter First Name: ")
+        is_valid, result = validators.validate_name(first_name)
+        if not is_valid:
+            print(f"\n✗ {result}\n")
+            continue
+        first_name = result
+        
+        #Last Name
         last_name = input("Enter Last Name: ")
+        is_valid, result = validators.validate_name(last_name)
+        if not is_valid:
+            print(f"\n✗ {result}\n")
+            continue
+        last_name = result
+    
+        #Gender
         gender = input("Enter Gender: ")
+        is_valid, result = validators.validate_gender(gender)
+        if not is_valid:
+            print(f"\n✗ {result}\n")
+            continue
+        gender = result
+        
+        #Email
         email = input("Enter Email: ")
+        is_valid, result = validators.validate_email(email)
+        if not is_valid:
+            print(f"\n✗ {result}\n")
+            continue
+        email = result
+        
+        #Phone
         phone = input("Enter Phone Number: ")
+        is_valid, result = validators.validate_phone(phone)
+        if not is_valid:
+             print(f"\n✗ {result}\n")
+             continue
+        phone = result
 
         success = database.add_student(
             conn,
@@ -96,7 +151,7 @@ while True:
         )
 
         if success:
-            print("\n✓ Student added successfully.\n")
+            print(f"\n✓ Student '{roll_no}' added successfully.\n")
         else:
             print("\n✗ Student could not be added. Check the Department ID or Roll Number.\n")
 
@@ -112,6 +167,13 @@ while True:
     
     elif command == 5:
         roll_no = input("Enter the roll no of student you want to search: ")
+        is_valid, result = validators.validate_roll_no(roll_no)
+
+        if not is_valid:
+            print(f"\n✗ {result}\n")
+            continue
+
+        roll_no = result
         student = database.search_student(conn,roll_no)
         if student:
             display_student(student)
@@ -121,6 +183,13 @@ while True:
 
     elif command == 6:
         roll_no = input("Enter the Roll Number of the student you want to update: ")
+        is_valid, result = validators.validate_roll_no(roll_no)
+        
+        if not is_valid:
+            print(f"\n✗ {result}\n")
+            continue
+        
+        roll_no = result
 
         student = database.search_student(conn, roll_no)
 
@@ -135,11 +204,45 @@ while True:
             for department in departments:
                  print(f"{department[0]} - {department[1]}")
 
+            #First Name
             first_name = input("Enter New First Name: ")
+            is_valid, result = validators.validate_name(first_name)
+            if not is_valid:
+                print(f"\n✗ {result}\n")
+                continue
+            first_name = result
+            
+            #Last Name
             last_name = input("Enter New Last Name: ")
+            is_valid, result = validators.validate_name(last_name)
+            if not is_valid:
+                print(f"\n✗ {result}\n")
+                continue
+            last_name = result
+            
+            #Gender
             gender = input("Enter New Gender: ")
+            is_valid, result = validators.validate_gender(gender)
+            if not is_valid:
+                 print(f"\n✗ {result}\n")
+                 continue
+            gender = result
+            
+            #Email
             email = input("Enter New Email: ")
+            is_valid, result = validators.validate_email(email)
+            if not is_valid:
+                print(f"\n✗ {result}\n")
+                continue
+            email = result
+            
+            #Phone
             phone = input("Enter New Phone Number: ")
+            is_valid, result = validators.validate_phone(phone)
+            if not is_valid:
+                print(f"\n✗ {result}\n")
+                continue
+            phone = result
 
             try:
                 age = int(input("Enter New Age: "))
@@ -148,6 +251,13 @@ while True:
                 print("\nAge and Department ID must be numbers.\n")
                 continue
 
+            is_valid, result = validators.validate_age(age)
+            if not is_valid:
+                print(f"\n✗ {result}\n")
+                continue
+            age = result
+            
+            
             success = database.update_student(
                 conn,
                 roll_no,
@@ -161,22 +271,32 @@ while True:
                 )
 
             if success:
-                print("\n✓ Student updated successfully.\n")
+                print(f"\n✓ Student '{roll_no}' updated successfully.\n")
+            else:
+                print("\n✗ Student could not be updated.\n")
      
     elif command == 7:
          roll_no = input("Enter the Roll Number of the student you want to delete: ")
-     
+         is_valid, result = validators.validate_roll_no(roll_no)
+
+         if not is_valid:
+            print(f"\n✗ {result}\n")
+            continue
+
+         roll_no = result
          student = database.search_student(conn, roll_no)
      
          if not student:
              print(f"\nNo student found with Roll Number '{roll_no}'.\n")
          else:
             display_student(student)  
-            choice = input("Are you sure you want to delete this student? (Y/N): ").upper()   
+            choice = input("Are you sure you want to delete this student? (Y/N): ").strip().upper()   
             if choice == "Y":
                 success = database.delete_student(conn,roll_no)
                 if success:
                     print(f"\n✓ Student '{roll_no}' deleted successfully.\n")
+                else:
+                    print("\n✗ Student could not be deleted.\n")
             elif choice == "N":
                 print("\nDeletion cancelled.\n")
             else:
