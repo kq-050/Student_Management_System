@@ -4,10 +4,14 @@ def validate_name(name):
    if not name:
        return False,"Name cannot be Empty!"
    
-   if not name.isalpha():
-       return False, "Name must be only letters"
+   if not all(char.isalpha() or char.isspace() for char in name):
+       return False, "NName can contain only letters and spaces."
    
-   name = name.title()
+   if "  " in name:
+       return False, "Name cannot contain multiple consecutive spaces."
+   
+   #Convert to title case:
+   name = " ".join(word.capitalize() for word in name.split())
    
    
    return True,name
