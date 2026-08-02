@@ -36,7 +36,8 @@ while True:
 7. Delete Student
 8. Student Statistics
 9. Export Students to CSV
-10. Exit
+10. Import Students from CSV
+11. Exit
 """)
 
     try:
@@ -228,8 +229,15 @@ while True:
         success, message = student_service.export_students()
 
         print(message)
-            
+    
     elif command == 10:
+        path = input("Enter CSV file path: ")
+
+        success, message = student_service.import_students(path)
+
+        print(message) 
+               
+    elif command == 11:
         conn.close()
         print("Goodbye!")
         break

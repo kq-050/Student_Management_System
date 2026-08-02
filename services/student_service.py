@@ -227,3 +227,132 @@ class StudentService:
         except OSError as error:
             logger.error(f"Failed to export students: {error}")
             return False, "Failed to export students."
+
+
+    def import_students(self, filename):
+
+        if not os.path.exists(filename):
+            return False, "CSV file not found."
+        try:
+            with open(filename, "r", newline="", encoding="utf-8") as file:
+                reader = csv.DictReader(file)
+                
+                imported = 0
+                skipped = 0
+                failed = 0
+                
+                for row in reader:
+
+                    roll_no = row["Roll No"]
+                    first_name = row["First Name"]
+                    last_name = row["Last Name"]
+                    gender = row["Gender"]
+                    email = row["Email"]
+                    phone = row["Phone"]
+                    department_name = row["Department"]
+
+                    # Convert age to integer
+                    try:
+                        age = int(row["Age"])
+                    except ValueError:
+                        failed += 1
+                        continue
+
+                    # Roll Number
+                    is_valid, result = validators.validate_roll_no(roll_no)
+                    if not is_valid:
+                        failed += 1
+                        continue
+                    roll_no = result
+
+                    # First Name
+                    is_valid, result = validators.validate_name(first_name)
+                    if not is_valid:
+                        failed += 1
+                        continue
+                    first_name = result
+
+                    # Last Name
+                    is_valid, result = validators.validate_name(last_name)
+                    if not is_valid:
+                        failed += 1
+                        continue
+                    last_name = result
+
+                    # Age
+                    is_valid, result = validators.validate_age(age)
+                    if not is_valid:
+                        failed += 1
+                        continue
+                    age = result
+
+                    # Gender
+                    is_valid, result = validators.validate_gender(gender)
+                    if not is_valid:
+                        failed += 1
+                        continue
+                    gender = result
+
+                    # Email
+                    is_valid, result = validators.validate_email(email)
+                    if not is_valid:
+                        failed += 1
+                        continue
+                    email = result
+
+                    # Phone
+                    is_valid, result = validators.validate_phone(phone)
+                    if not is_valid:
+                        failed += 1
+                        continue
+                    phone = result
+
+
+                    # Get department by name
+                    department = self.department_repository.get_department_by_name(department_name)
+
+                    if department is None:
+                        failed += 1
+                        continue
+
+                    department_id = department.id
+                    
+                    # Create Student object
+                    student = Student(
+                        roll_no=roll_no,
+                        first_name=first_name,
+                        last_name=last_name,
+                        age=age,
+                        gender=gender,
+                        email=email,
+                        phone=phone,
+                        department_id=department_id
+                    )
+
+                    success = self.student_repository.add_student(student)
+                    
+                    if success:
+                        imported += 1
+                    else:
+                        skipped += 1
+                    
+                logger.info(
+                    f"CSV Import -> Imported: {imported}, "
+                    f"Skipped: {skipped}, "
+                    f"Failed: {failed}"
+                )
+                if imported == 0:
+                    return (
+                        True,
+                        f"Import completed.\n"
+                        f"Imported: {imported}\n"
+                        f"Skipped: {skipped}\n"
+                        f"Failed: {failed}"
+                    )       
+        except KeyError as error:
+            logger.error(error)
+            return False, "Invalid CSV format. Please use the exported template." 
+       
+        except OSError as error:
+            logger.error(error)
+            return False, "Failed to read CSV file."
