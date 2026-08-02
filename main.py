@@ -34,7 +34,9 @@ while True:
 5. Search Student
 6. Update Student
 7. Delete Student
-8. Exit
+8. Student Statistics
+9. Export Students to CSV
+10. Exit
 """)
 
     try:
@@ -197,6 +199,37 @@ while True:
                 print("\nInvalid choice. Please enter Y or N.\n")
     
     elif command == 8:
+        statistics = student_service.get_student_statistics()
+        if statistics is None:
+            print("\nCould not load statistics.\n")
+            continue
+        
+        print("\n" + "=" * 45)
+        print("        Student Statistics")
+        print("=" * 45)
+        
+        print(f"Total Students         :{statistics['total_students']}")
+        print(f"Total Departments      :{statistics['total_departments']}")
+        
+        print(f"Average Age            :{statistics['average_age']}")
+        print(f"Youngest Student       :{statistics['youngest']}")
+        print(f"Oldest Student         :{statistics['oldest']}")
+        
+        print(f"Students by Department")
+        print("-" * 45)
+        
+        for department_name, total in statistics['students_per_department']:
+            print(f"{department_name:>25} : {total}")
+        
+        print("=" * 45)
+        
+    
+    elif command == 9:
+        success, message = student_service.export_students()
+
+        print(message)
+            
+    elif command == 10:
         conn.close()
         print("Goodbye!")
         break

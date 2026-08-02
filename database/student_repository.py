@@ -262,3 +262,56 @@ class StudentRepository:
             return False, "Student could not be deleted."
     
     
+
+    def get_student_statistics(self):
+        cursor = self.conn.cursor()
+        
+        try:
+            cursor.execute("SELECT COUNT(*) FROM Student")
+            
+            total_students = cursor.fetchone()[0]
+            
+            cursor.execute("SELECT AVG(age) FROM Student")
+            
+            avg_age = cursor.fetchone()[0]
+            
+            cursor.execute("SELECT MIN(age) FROM Student")
+            
+            youngest = cursor.fetchone()[0]
+            
+            cursor.execute("SELECT MAX(age) FROM Student")
+            
+            oldest = cursor.fetchone()[0]
+            
+            cursor.execute("SELECT COUNT(*) FROM Department")
+            
+            total_departments = cursor.fetchone()[0]
+            
+            #Students Per Department:
+            cursor.execute("""SELECT
+                    Department.department_name,
+                    COUNT(Student.id)
+                    FROM Department
+                    LEFT JOIN Student
+                    ON Department.id = Student.department_id
+                    GROUP BY Department.id
+                    ORDER BY Department.department_name;""")
+            
+            students_per_department = cursor.fetchall()
+            
+            return {
+                "total_students": total_students,
+                "total_departments": total_departments,
+                "average_age": avg_age,
+                "youngest": youngest,
+                "oldest": oldest,
+                "students_per_department": students_per_department
+}
+            
+        except sqlite3.Error as error:
+            logger.error(error)
+            return None
+        
+    
+    def export_students(self):
+        return self.view_students()

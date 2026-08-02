@@ -1,5 +1,8 @@
 import validators
 from models.student import Student
+import os
+import csv
+from logger import logger
 
 
 class StudentService:
@@ -157,4 +160,70 @@ class StudentService:
         
         return self.student_repository.add_student(student)  
         
-                
+    
+    def get_student_statistics(self):
+        
+        statistics = self.student_repository.get_student_statistics()
+
+        if statistics is None:
+            return None
+        
+        if statistics["average_age"] is None:
+            statistics["average_age"] = "N/A"
+        else:
+            statistics["average_age"] = f"{statistics['average_age']:.1f}"
+        
+        if statistics["youngest"] is None:
+            statistics["youngest"] = "N/A"
+
+        if statistics["oldest"] is None:
+            statistics["oldest"] = "N/A"
+
+        return statistics
+    
+    
+    def export_students(self):
+        students = self.student_repository.export_students()
+        
+        if students is None:
+            return False, "Could not export students."
+        
+        if not students:
+            return False, "No students found to export."
+        
+        if not os.path.exists("exports"):
+            os.makedirs("exports", exist_ok=True)
+        
+        filename = os.path.join("exports", "students.csv")
+        try:
+            with open(filename, "w", newline="", encoding="utf-8") as file:
+                writer = csv.writer(file)
+                 #Header
+                writer.writerow([
+                "Roll No",
+                "First Name",
+                "Last Name",
+                "Age",
+                "Gender",
+                "Email",
+                "Phone",
+                "Department"
+                ])
+            
+                #Data
+                for student in students:
+                    writer.writerow([
+                    student.roll_no,
+                    student.first_name,
+                    student.last_name,
+                    student.age,
+                    student.gender,
+                    student.email,
+                    student.phone,
+                    student.department_name
+                    ])
+            return True, f"Students exported successfully to '{filename}'."
+        
+        except OSError as error:
+            logger.error(f"Failed to export students: {error}")
+            return False, "Failed to export students."
