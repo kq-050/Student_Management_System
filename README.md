@@ -163,22 +163,22 @@ student-management-system/
 
 ### Main Menu
 
-![Main Menu](screenshots/main_menu.png)
+![Main Menu](screenshots/main_menu.PNG)
 
 ---
 
 ### Add Student
 
-![Add Student](screenshots/add_student.png)
+![Add Student](screenshots/add_student.PNG)
 
 ---
 
 ### View Students
-![View Students - Page 1](screenshots/view_students_1.png)
+![View Students - Page 1](screenshots/view_students_1.PNG)
 
-![View Students - Page 2](screenshots/view_students_2.png)
+![View Students - Page 2](screenshots/view_students_2.PNG)
 
-![View Students - Page 3](screenshots/view_students_3.png)
+![View Students - Page 3](screenshots/view_students_3.PNG)
 
 ---
 
@@ -198,26 +198,26 @@ The application supports searching students using multiple criteria.
 ### Student Statistics
 View overall statistics including total students, departments, and gender distribution.
 
-![Statistics](screenshots/student_statistics.png)
+![Statistics](screenshots/student_statistics.PNG)
 
 ---
 
 ### Sort Students
-![Sort Students](screenshots/sorting.png)
+![Sort Students](screenshots/sorting.PNG)
 
 ---
 
 ### Export & Import CSV
-![Export](screenshots/exports.png)
+![Export](screenshots/exports.PNG)
 
-![Import](screenshots/imports.png)
+![Import](screenshots/imports.PNG)
 
 ---
 
 ### Backup & Restore
-![Backup](screenshots/backup.png)
+![Backup](screenshots/backup.PNG)
 
-![Restore](screenshots/restore_backup.png)
+![Restore](screenshots/restore_backup.PNG)
 
 ---
 
