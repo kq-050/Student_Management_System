@@ -3,19 +3,25 @@ from models.student import Student
 import os
 import csv
 from logger import logger
+import math
 
 
 class StudentService:
+    PAGE_SIZE = 10
     
     def __init__(self,student_repository):
         self.student_repository = student_repository
         
     
-    def view_students(self):
-        return self.student_repository.view_students()
+    # def view_students(self):
+    #     return self.student_repository.view_students()
         
     def search_student(self, roll_no):
-        return self.student_repository.search_student(roll_no)
+        student = self.student_repository.search_student(roll_no)
+        if student:
+            return True, student
+
+        return False, "Student not found."
         
     def delete_student(self, roll_no):
         return self.student_repository.delete_student(roll_no)
@@ -356,3 +362,98 @@ class StudentService:
         except OSError as error:
             logger.error(error)
             return False, "Failed to read CSV file."
+        
+    def search_students_by_name(self, name):
+        #validate name
+        is_valid, result = validators.validate_name(name)
+        
+        if not is_valid:
+            return False, result
+        
+        name = result
+        
+        #Call repo 
+        students = self.student_repository.search_students_by_name()
+        
+        if students is None:
+            return False, "An error occurred while searching."
+        
+        if not students:
+            return False, "No students found."
+        
+        
+        return True, students
+    
+    
+    def search_students_by_department(self, department_name):
+
+        department_name = department_name.strip()
+
+        if not department_name:
+            return False, "Department name cannot be empty."
+
+        students = self.student_repository.search_students_by_department(department_name)
+
+        if students is None:
+            return False, "An error occurred while searching."
+
+        if not students:
+            return False, "No students found."
+
+        return True, students
+    
+    def search_students_by_gender(self, gender):
+        
+        is_valid, result = validators.validate_gender(gender)
+                
+        if not is_valid:
+            return False, result
+                
+        gender = result
+        
+        students = self.student_repository.search_students_by_gender(gender)
+        
+        if students is None:
+            return False, "An error occurred while searching."
+                
+        if not students:
+            return False, "No students found."
+                
+                
+        return True, students
+    
+    def sort_students(self, sort_by):
+        students = self.student_repository.sort_students(sort_by)
+
+        if students is None:
+            return False, "Invalid sort option."
+
+        if not students:
+            return False, "No students found."
+
+        return True, students
+    
+    def view_students_paginated(self, page):
+        students = self.student_repository.view_students_paginated(page,self.PAGE_SIZE)
+        
+        if students is None:
+            return False, "An error occurred while retrieving students."
+        
+        total_students = self.student_repository.get_total_students()
+        
+        if total_students is None:
+            return False, "An error occurred while retrieving student count."
+        
+        total_pages = math.ceil(total_students / self.PAGE_SIZE)
+        
+        if total_pages == 0:
+            total_pages = 1
+         
+        if page < 1 or page > total_pages:
+            return False, "Invalid page number."
+         
+        return True, {
+            "students": students,
+            "page": page,
+            "total_pages": total_pages
+        }   

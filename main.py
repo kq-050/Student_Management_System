@@ -1,11 +1,14 @@
+import os
 from database import connection
 from database.department_repository import DepartmentRepository
 from database.student_repository import StudentRepository
+from database.database_repository import DatabaseRepository
 import validators
 from models.student import Student
 from utils.display import display_student, display_department
 from services.student_service import StudentService
 from services.department_service import DepartmentService
+from services.database_service import DatabaseService
 
 conn = connection.connect_database()
 if conn is None:
@@ -16,8 +19,10 @@ if conn is None:
 connection.create_tables(conn)
 department_repository = DepartmentRepository(conn)
 student_repository = StudentRepository(conn)
+database_repository = DatabaseRepository("student.db")
 student_service = StudentService(student_repository)
 department_service = DepartmentService(department_repository)
+database_service = DatabaseService(database_repository)
 
 
 
@@ -37,8 +42,12 @@ while True:
 8. Student Statistics
 9. Export Students to CSV
 10. Import Students from CSV
-11. Exit
+11. Sort Students
+12. Backup Database
+13. Restore Database
+14. Exit
 """)
+
 
     try:
         command = int(input("Choose an option: "))
@@ -108,31 +117,131 @@ while True:
             print(f"\n {message} \n")
 
     elif command == 4:
-        students = student_service.view_students()
+        page = 1
 
-        if not students:
-            print("\nNo students found.\n")
-        else:
-            for student in students:
-                display_student(student)
+        while True:
+            os.system("cls" if os.name == "nt" else "clear")
+            success, result = student_service.view_students_paginated(page)
+
+            if not success:
+                print(f"\n✗ {result}\n")
+                break
+
+            students = result["students"]
+            current_page = result["page"]
+            total_pages = result["total_pages"]
+
+            print("\n" + "=" * 50)
+            print("              Student List")
+            print(f"             Page {current_page} of {total_pages}")
+            print("=" * 50)
+
+            if not students:
+                print("\nNo students found.\n")
+            else:
+                for student in students:
+                    display_student(student)
+
+            print("\nNavigation")
+            print("N - Next Page")
+            print("P - Previous Page")
+            print("Q - Back")
+
+            choice = input("\nChoose an option: ").strip().upper()
+
+            if choice == "N":
+                if page < total_pages:
+                    page += 1
+                else:
+                    print("\nAlready on the last page.\n")
+
+            elif choice == "P":
+                if page > 1:
+                    page -= 1
+                else:
+                    print("\nAlready on the first page.\n")
+
+            elif choice == "Q":
+                break
+
+            else:
+                print("\nInvalid option.\n")
                 
     
     elif command == 5:
-        roll_no = input("Enter the roll no of student you want to search: ")
-        is_valid, result = validators.validate_roll_no(roll_no)
+        while True:
+            print("""
+                  ========== Search Students ==========
 
-        if not is_valid:
-            print(f"\n✗ {result}\n")
-            continue
+                1. By Roll Number
+                2. By Name
+                3. By Department
+                4. By Gender
+                5. Back""")
+            
+            try:
+                search_choice = int(input("Choose an option: "))
+                if search_choice == 1:
+                    roll_no = input("Enter Roll Number: ")
 
-        roll_no = result
-        student = student_service.search_student(roll_no)
-        if student:
-            display_student(student)
-        else:
-            print(f"\nNo student found with Roll Number '{roll_no}'.\n")
+                    is_valid, result = validators.validate_roll_no(roll_no)
+
+                    if not is_valid:
+                        print(f"\n✗ {result}\n")
+                        continue
+
+                    roll_no = result
+
+                    success, result = student_service.search_student(roll_no)
+
+                    if success:
+                        display_student(result)
+                    else:
+                        print(f"\n✗ {result}\n")
+                    
+                elif search_choice == 2:
+                    name = input("Enter Name: ")
+
+                    success, result = student_service.search_students_by_name(name)
+
+                    if success:
+                        for student in result:
+                            display_student(student)
+                    else:
+                        print(f"\n✗ {result}\n")
+                
+                elif search_choice == 3:
+                    department_name = input("Enter Department Name: ")
+
+                    success, result = student_service.search_students_by_department(department_name)
+
+                    if success:
+                        for student in result:
+                            display_student(student)
+                    else:
+                        print(f"\n✗ {result}\n")
+                    
+                elif search_choice == 4:
+                    gender = input("Enter Gender: ")
+
+                    success, result = student_service.search_students_by_gender(gender)
+
+                    if success:
+                        for student in result:
+                            display_student(student)
+                    else:
+                        print(f"\n✗ {result}\n")
+                
+                elif search_choice == 5:
+                    break
+                
+                else:
+                    print("Invalid Option!!")
+                
+            except ValueError:
+                print("Please enter a valid number.")
+                continue
         
-
     elif command == 6:
         roll_no = input("Enter the Roll Number of the student you want to update: ")
 
@@ -236,8 +345,61 @@ while True:
         success, message = student_service.import_students(path)
 
         print(message) 
-               
+    
     elif command == 11:
+        while True:
+            print("""
+                ========== Sort Students ==========
+                1. By Name
+                2. By Roll Number
+                3. By Age
+                4. By Department
+                5. Back  """)  
+            
+            try:
+                sort_choice = int(input("Choose an option: "))
+            except ValueError:
+                print("\nPlease enter a valid number.\n")
+                continue
+            
+            if sort_choice == 1:
+                success, result = student_service.sort_students("name")
+
+            elif sort_choice == 2:
+                success, result = student_service.sort_students("roll_no")
+
+            elif sort_choice == 3:
+                success, result = student_service.sort_students("age")
+
+            elif sort_choice == 4:
+                success, result = student_service.sort_students("department")   
+                
+            elif sort_choice == 5:
+                break
+            
+            else:
+                print("Invalid option!")
+                continue
+                
+            if success:
+                for student in result:
+                    display_student(student)
+            else:
+                print(f"\n✗ {result}\n")    
+                
+    elif command == 12:
+        success, message = database_service.backup_database()
+
+        print(f"\n{message}\n")
+    
+    elif command == 13:
+        backup_path = input("Enter the backup file path: ").strip()
+
+        success, message = database_service.restore_database(backup_path)
+
+        print(f"\n{message}\n")
+      
+    elif command == 14:
         conn.close()
         print("Goodbye!")
         break

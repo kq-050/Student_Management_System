@@ -86,49 +86,61 @@ class StudentRepository:
             self.conn.rollback()
             return False, "Database error."
     
+    def _create_student(self, row):
+        return Student(
+            roll_no=row[0],
+            first_name=row[1],
+            last_name=row[2],
+            age=row[3],
+            gender=row[4],
+            email=row[5],
+            phone=row[6],
+            department_id=row[7],
+            department_name=row[8]
+        )
     
-    def view_students(self):
-        cursor = self.conn.cursor()
+    # def view_students(self):
+    #     cursor = self.conn.cursor()
         
-        try:
+    #     try:
                 
-            cursor.execute("""
-              SELECT
-                Student.roll_no,
-                Student.first_name,
-                Student.last_name,
-                Student.age,
-                Student.gender,
-                Student.email,
-                Student.phone,
-                Student.department_id,
-                Department.department_name
-              FROM Student
-              INNER JOIN Department
-                ON Student.department_id = Department.id
-                ORDER BY Student.roll_no
-                """)
+    #         cursor.execute("""
+    #           SELECT
+    #             Student.roll_no,
+    #             Student.first_name,
+    #             Student.last_name,
+    #             Student.age,
+    #             Student.gender,
+    #             Student.email,
+    #             Student.phone,
+    #             Student.department_id,
+    #             Department.department_name
+    #           FROM Student
+    #           INNER JOIN Department
+    #             ON Student.department_id = Department.id
+    #             ORDER BY Student.roll_no
+    #             """)
         
-            rows = cursor.fetchall()
-            students = []
-            for row in rows:
-                student = Student(
-                    roll_no=row[0],
-                    first_name=row[1],
-                    last_name=row[2],
-                    age=row[3],
-                    gender=row[4],
-                    email=row[5],
-                    phone=row[6],
-                    department_id=row[7],
-                    department_name=row[8]
-                )
-                students.append(student)
-            return students
+    #         rows = cursor.fetchall()
+    #         students = []
+    #         for row in rows:
+    #             student = Student(
+    #                 roll_no=row[0],
+    #                 first_name=row[1],
+    #                 last_name=row[2],
+    #                 age=row[3],
+    #                 gender=row[4],
+    #                 email=row[5],
+    #                 phone=row[6],
+    #                 department_id=row[7],
+    #                 department_name=row[8]
+    #             )
+    #             students.append(student)
+    #         return students
          
-        except sqlite3.Error as error:
-                logger.error(error)
-                return False
+    #     except sqlite3.Error as error:
+    #             logger.error(error)
+    #             return False
         
     
     
@@ -261,8 +273,105 @@ class StudentRepository:
             self.conn.rollback()
             return False, "Student could not be deleted."
     
+    def search_students_by_name(self,name):
+        cursor = self.conn.cursor()
+        
+        try:
+            search = f"%{name}%"
+            cursor.execute("""
+                SELECT
+                    Student.roll_no,
+                    Student.first_name,
+                    Student.last_name,
+                    Student.age,
+                    Student.gender,
+                    Student.email,
+                    Student.phone,
+                    Department.id,
+                    Department.department_name
+                FROM Student
+                INNER JOIN Department
+                    ON Student.department_id = Department.id
+                WHERE
+                    Student.first_name LIKE ?
+                    OR Student.last_name LIKE ?
+                ORDER BY Student.first_name;""",(search,search))
+            
+            students_data = cursor.fetchall()
+            
+            students = [self._create_student(row) for row in students_data]
+            return students
+        
+        except sqlite3.Error as error:
+            logger.error(error)
+            return None       
     
+    
+    def search_students_by_department(self, department_name):
+        cursor = self.conn.cursor()
+        
+        try:
+            search = f"%{department_name}%"
+            cursor.execute("""
+                SELECT
+                    Student.roll_no,
+                    Student.first_name,
+                    Student.last_name,
+                    Student.age,
+                    Student.gender,
+                    Student.email,
+                    Student.phone,
+                    Department.id,
+                    Department.department_name
+                FROM Student
+                INNER JOIN Department
+                    ON Student.department_id = Department.id
+                WHERE Department.department_name LIKE ?
+                ORDER BY Student.first_name;""",(search,))
+            
+            students_data = cursor.fetchall()
+            
+            students = [self._create_student(row) for row in students_data]
+            return students
+        
+        except sqlite3.Error as error:
+            logger.error(error)
+            return None   
+            
 
+    def search_students_by_gender(self, gender):
+        cursor = self.conn.cursor()
+        
+        try:
+            cursor.execute("""
+            SELECT
+                Student.roll_no,
+                Student.first_name,
+                Student.last_name,
+                Student.age,
+                Student.gender,
+                Student.email,
+                Student.phone,
+                Department.id,
+                Department.department_name
+            FROM Student
+            INNER JOIN Department
+                ON Student.department_id = Department.id
+            WHERE Student.gender = ?
+            ORDER BY Student.first_name;
+        """, (gender,))
+            
+            students_data = cursor.fetchall()
+            
+            students = [self._create_student(row) for row in students_data]
+
+            return students
+
+        except sqlite3.Error as error:
+            logger.error(error)
+            return None
+
+    
     def get_student_statistics(self):
         cursor = self.conn.cursor()
         
@@ -315,3 +424,101 @@ class StudentRepository:
     
     def export_students(self):
         return self.view_students()
+    
+    
+    def sort_students(self, sort_by):
+        cursor = self.conn.cursor()
+        
+        try:
+            sort_columns = {
+                "name": "Student.first_name",
+                "roll_no": "Student.roll_no",
+                "age": "Student.age",
+                "department": "Department.department_name"
+            }
+            
+            order_by = sort_columns.get(sort_by)
+            
+            if order_by is None:
+                return None
+
+            cursor.execute(f"""
+                SELECT
+                    Student.roll_no,
+                    Student.first_name,
+                    Student.last_name,
+                    Student.age,
+                    Student.gender,
+                    Student.email,
+                    Student.phone,
+                    Department.id,
+                    Department.department_name
+                FROM Student
+                INNER JOIN Department
+                    ON Student.department_id = Department.id 
+                    ORDER BY {order_by};""")
+            
+            students_data = cursor.fetchall()
+            
+            students = [self._create_student(row) for row in students_data]
+
+            return students
+        
+        except sqlite3.Error as error:
+            logger.error(error)
+            return None
+        
+    def view_students_paginated(self, page, page_size):
+        cursor = self.conn.cursor()
+        
+        offset = (page - 1) * page_size
+        
+        try:
+            cursor.execute("""
+                SELECT
+                    Student.roll_no,
+                    Student.first_name,
+                    Student.last_name,
+                    Student.age,
+                    Student.gender,
+                    Student.email,
+                    Student.phone,
+                    Student.department_id,
+                    Department.department_name
+                FROM Student
+                INNER JOIN Department
+                ON Student.department_id = Department.id
+                ORDER BY Student.first_name
+                LIMIT ?
+                OFFSET ?;""",(page_size, offset))
+            
+            students_data = cursor.fetchall()
+            
+            students = [
+                self._create_student(row)
+                for row in students_data
+            ]
+            
+            return students
+        
+        except sqlite3.Error as error:
+            logger.error(error)
+            return None
+        
+        
+    def get_total_students(self):
+        cursor = self.conn.cursor()
+        
+        try:
+            cursor.execute("SELECT COUNT(*) FROM Student;")
+            
+            student_count = cursor.fetchone()[0]
+            
+            return student_count
+        
+        except sqlite3.Error as error:
+            logger.error(error)
+            return None
+
+                    
+        
