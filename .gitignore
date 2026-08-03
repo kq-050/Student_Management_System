@@ -2,3 +2,11 @@
 __pycache__/
 *.pyc
 student.db
+__pycache__/
+*.pyc
+*.db
+*.log
+exports/
+imports/
+backups/
+.venv/
