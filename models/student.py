@@ -1,5 +1,5 @@
 class Student:
-    
+
     def __init__(
         self,
         roll_no,
@@ -10,7 +10,7 @@ class Student:
         email,
         phone,
         department_id=None,
-        department_name=None
+        department_name=None,
     ):
         self.roll_no = roll_no
         self.first_name = first_name
@@ -21,12 +21,10 @@ class Student:
         self.phone = phone
         self.department_id = department_id
         self.department_name = department_name
-        
-    
+
     def get_full_name(self):
         return f"{self.first_name} {self.last_name}"
-    
-        
+
     def to_tuple(self):
         return (
             self.roll_no,
@@ -36,5 +34,5 @@ class Student:
             self.gender,
             self.email,
             self.phone,
-            self.department_id
-    )
+            self.department_id,
+        )

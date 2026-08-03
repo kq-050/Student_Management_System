@@ -6,14 +6,15 @@ def connect_database():
     try:
         conn = sqlite3.connect("student.db")
 
-         # Enable foreign key constraints
+        # Enable foreign key constraints
         conn.execute("PRAGMA foreign_keys = ON")
 
         return conn
-    
+
     except sqlite3.Error as error:
         logger.error(error)
         return None
+
 
 def create_tables(conn):
     cursor = conn.cursor()
@@ -39,9 +40,9 @@ def create_tables(conn):
          """)
 
         conn.commit()
-        
+
         return True
-    
+
     except sqlite3.Error as error:
         logger.error(error)
         conn.rollback()

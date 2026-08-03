@@ -30,7 +30,6 @@ class TestDepartmentService(unittest.TestCase):
 
         self.assertTrue(result)
 
-
     def test_add_department_failure(self):
         service = DepartmentService(FakeDepartmentRepositoryFail())
 

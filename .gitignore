@@ -1,12 +1,22 @@
+# Virtual Environment
 .venv/
+
+# Python Cache
 __pycache__/
-*.pyc
-student.db
-__pycache__/
-*.pyc
-*.db
+*.py[cod]
+
+# Logs
+logs/
 *.log
+
+# Generated Files
 exports/
-imports/
 backups/
-.venv/
+
+# IDE Settings
+.vscode/
+.idea/
+
+# Operating System Files
+.DS_Store
+Thumbs.db

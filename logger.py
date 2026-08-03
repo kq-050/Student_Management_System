@@ -8,7 +8,7 @@ if not os.path.exists("logs"):
 logging.basicConfig(
     filename="logs/student_system.log",
     level=logging.INFO,
-    format="%(asctime)s | %(levelname)s | %(message)s"
+    format="%(asctime)s | %(levelname)s | %(message)s",
 )
 
 

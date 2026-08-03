@@ -3,3 +3,54 @@
                 "
 2026-07-30 18:09:59,630 | INFO | Student 23MDSWE added successfully
 2026-08-03 19:26:53,967 | INFO | Database backup created: backups\student_management_2026-08-03_19-26-53.db
+2026-08-03 23:20:30,887 | INFO | Student 1 deleted successfully
+2026-08-03 23:21:00,912 | INFO | Student 22SWEMD deleted successfully
+2026-08-03 23:21:14,098 | INFO | Student 23MDSWE deleted successfully
+2026-08-03 23:23:06,466 | INFO | Department Artificial Intelligence added successfully
+2026-08-03 23:23:16,069 | INFO | Department Information Technology added successfully
+2026-08-03 23:38:49,753 | INFO | Student 2605SW1 added successfully
+2026-08-03 23:38:49,776 | INFO | Student 2605SW2 added successfully
+2026-08-03 23:38:49,798 | INFO | Student 2605SW3 added successfully
+2026-08-03 23:38:49,814 | INFO | Student 2605SW4 added successfully
+2026-08-03 23:38:49,827 | INFO | Student 2605SW5 added successfully
+2026-08-03 23:38:49,844 | INFO | Student 2605CS1 added successfully
+2026-08-03 23:38:49,866 | INFO | Student 2605CS2 added successfully
+2026-08-03 23:38:49,879 | INFO | Student 2605CS3 added successfully
+2026-08-03 23:38:49,891 | INFO | Student 2605CS4 added successfully
+2026-08-03 23:38:49,910 | INFO | Student 2605CS5 added successfully
+2026-08-03 23:38:49,929 | INFO | Student 2605AI1 added successfully
+2026-08-03 23:38:49,941 | INFO | Student 2605AI2 added successfully
+2026-08-03 23:38:49,954 | INFO | Student 2605AI3 added successfully
+2026-08-03 23:38:49,974 | INFO | Student 2605AI4 added successfully
+2026-08-03 23:38:49,991 | INFO | Student 2605AI5 added successfully
+2026-08-03 23:38:50,002 | INFO | Student 2605IT1 added successfully
+2026-08-03 23:38:50,017 | INFO | Student 2605IT2 added successfully
+2026-08-03 23:38:50,039 | INFO | Student 2605IT3 added successfully
+2026-08-03 23:38:50,054 | INFO | Student 2605IT4 added successfully
+2026-08-03 23:38:50,066 | INFO | Student 2605IT5 added successfully
+2026-08-03 23:38:50,085 | INFO | Student 2605SW6 added successfully
+2026-08-03 23:38:50,107 | INFO | Student 2605CS6 added successfully
+2026-08-03 23:38:50,119 | INFO | Student 2605CS7 added successfully
+2026-08-03 23:38:50,131 | INFO | Student 2605AI6 added successfully
+2026-08-03 23:38:50,152 | INFO | Student 2605AI7 added successfully
+2026-08-03 23:38:50,173 | INFO | Student 2605IT6 added successfully
+2026-08-03 23:38:50,185 | INFO | Student 2605IT7 added successfully
+2026-08-03 23:38:50,198 | INFO | Student 2605SW8 added successfully
+2026-08-03 23:38:50,220 | INFO | Student 2605CS8 added successfully
+2026-08-03 23:38:50,220 | INFO | CSV Import -> Imported: 29, Skipped: 0, Failed: 1
+2026-08-03 23:42:06,191 | INFO | Department Civil Engineering added successfully
+2026-08-03 23:51:52,680 | INFO | Student 2605SWC added successfully
+2026-08-04 00:07:45,799 | INFO | Student 26SE009 added successfully
+2026-08-04 00:07:45,809 | INFO | Student 26SE010 added successfully
+2026-08-04 00:07:45,817 | INFO | Student 26SE011 added successfully
+2026-08-04 00:07:45,824 | INFO | Student 26SE012 added successfully
+2026-08-04 00:07:45,830 | INFO | Student 26SE013 added successfully
+2026-08-04 00:07:45,836 | INFO | Student 26CS009 added successfully
+2026-08-04 00:07:45,842 | INFO | Student 26CS010 added successfully
+2026-08-04 00:07:45,850 | INFO | Student 26CS011 added successfully
+2026-08-04 00:07:45,856 | INFO | Student 26CS012 added successfully
+2026-08-04 00:07:45,861 | INFO | Student 26CS013 added successfully
+2026-08-04 00:07:45,861 | INFO | CSV Import -> Imported: 10, Skipped: 0, Failed: 0
+2026-08-04 00:09:28,432 | INFO | Database backup created: backups\student_management_2026-08-04_00-09-28.db
+2026-08-04 00:13:29,609 | ERROR | Database restore failed: [Errno 13] Permission denied: 'backups/'
+2026-08-04 00:15:12,047 | INFO | Database restored from: backups\student_management_2026-08-04_00-09-28.db

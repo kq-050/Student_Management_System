@@ -48,7 +48,6 @@ class TestStudentService(unittest.TestCase):
 
         self.assertTrue(result)
 
-
     def test_delete_student_failure(self):
         service = StudentService(FakeStudentRepositoryFail())
 

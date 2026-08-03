@@ -1,0 +1,11 @@
+Roll No,First Name,Last Name,Age,Gender,Email,Phone,Department
+26SE009,Ahmad,Yousaf,22,Male,ahmad.yousaf@example.com,03061234567,Software Engineering
+26SE010,Hassan,Ali,21,Male,hassan.ali@example.com,03071234567,Software Engineering
+26SE011,Maham,Khan,20,Female,maham.khan@example.com,03081234567,Software Engineering
+26SE012,Usman,Farooq,23,Male,usman.farooq@example.com,03091234567,Software Engineering
+26SE013,Amna,Siddique,22,Female,amna.siddique@example.com,03101234567,Software Engineering
+26CS009,Saif,Ahmed,21,Male,saif.ahmed@example.com,03111234568,Computer Science
+26CS010,Zoya,Aslam,20,Female,zoya.aslam@example.com,03121234568,Computer Science
+26CS011,Faizan,Qureshi,23,Male,faizan.qureshi@example.com,03131234568,Computer Science
+26CS012,Areeba,Nasir,22,Female,areeba.nasir@example.com,03141234568,Computer Science
+26CS013,Daniyal,Shah,21,Male,daniyal.shah@example.com,03151234568,Computer Science

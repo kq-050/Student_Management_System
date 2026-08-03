@@ -8,177 +8,149 @@ import math
 
 class StudentService:
     PAGE_SIZE = 10
-    
-    def __init__(self,student_repository):
+
+    def __init__(self, student_repository,department_repository):
         self.student_repository = student_repository
-        
-    
+        self.department_repository = department_repository
+
     # def view_students(self):
     #     return self.student_repository.view_students()
-        
+
     def search_student(self, roll_no):
         student = self.student_repository.search_student(roll_no)
         if student:
             return True, student
 
         return False, "Student not found."
-        
+
     def delete_student(self, roll_no):
         return self.student_repository.delete_student(roll_no)
-        
-    def update_student(self,
-    roll_no,
-    first_name,
-    last_name,
-    age,
-    gender,
-    email,
-    phone,
-    department_id):
-        
-        #Age
+
+    def update_student(
+        self, roll_no, first_name, last_name, age, gender, email, phone, department_id
+    ):
+
+        # Age
         is_valid, result = validators.validate_age(age)
         if not is_valid:
             return False, result
-        
+
         age = result
-        
-        #Roll Number
+
+        # Roll Number
         is_valid, result = validators.validate_roll_no(roll_no)
         if not is_valid:
             return False, result
         roll_no = result
-            
-        #First Name       
+
+        # First Name
         is_valid, result = validators.validate_name(first_name)
         if not is_valid:
-            return False,result
+            return False, result
         first_name = result
-                
-        #Last Name
+
+        # Last Name
         is_valid, result = validators.validate_name(last_name)
         if not is_valid:
-            return False, result      
+            return False, result
         last_name = result
-            
-        #Gender
+
+        # Gender
         is_valid, result = validators.validate_gender(gender)
         if not is_valid:
             return False, result
         gender = result
-                
-        #Email
+
+        # Email
         is_valid, result = validators.validate_email(email)
         if not is_valid:
-            return False,result
+            return False, result
         email = result
-                
-        #Phone
+
+        # Phone
         is_valid, result = validators.validate_phone(phone)
         if not is_valid:
-            return False, result    
-        phone = result    
-        
+            return False, result
+        phone = result
+
         student = Student(
-            roll_no,
-            first_name,
-            last_name,
-            age,
-            gender,
-            email,
-            phone,
-            department_id
-        ) 
-        
+            roll_no, first_name, last_name, age, gender, email, phone, department_id
+        )
+
         return self.student_repository.update_student(student)
-    
-    def add_student(self,
-    roll_no,
-    first_name,
-    last_name,
-    age,
-    gender,
-    email,
-    phone,
-    department_id):
-        
-        #Age
+
+    def add_student(
+        self, roll_no, first_name, last_name, age, gender, email, phone, department_id
+    ):
+
+        # Age
         is_valid, result = validators.validate_age(age)
         if not is_valid:
             return False, result
-        
+
         age = result
-        
-        #Roll Number
+
+        # Roll Number
         is_valid, result = validators.validate_roll_no(roll_no)
-        
+
         if not is_valid:
             return False, result
-            
+
         roll_no = result
-            
-        #First Name       
+
+        # First Name
         is_valid, result = validators.validate_name(first_name)
         if not is_valid:
-            return False,result
-        
+            return False, result
+
         first_name = result
-                
-        #Last Name
+
+        # Last Name
         is_valid, result = validators.validate_name(last_name)
         if not is_valid:
-            return False, result      
-                
+            return False, result
+
         last_name = result
-            
-        #Gender
+
+        # Gender
 
         is_valid, result = validators.validate_gender(gender)
         if not is_valid:
             return False, result
-               
+
         gender = result
-                
-        #Email
+
+        # Email
         is_valid, result = validators.validate_email(email)
         if not is_valid:
-            return False,result
-        
+            return False, result
+
         email = result
-                
-        #Phone
+
+        # Phone
         is_valid, result = validators.validate_phone(phone)
         if not is_valid:
-            return False, result    
-        phone = result    
-        
-        
+            return False, result
+        phone = result
+
         student = Student(
-            roll_no,
-            first_name,
-            last_name,
-            age,
-            gender,
-            email,
-            phone,
-            department_id
-                ) 
-        
-        return self.student_repository.add_student(student)  
-        
-    
+            roll_no, first_name, last_name, age, gender, email, phone, department_id
+        )
+
+        return self.student_repository.add_student(student)
+
     def get_student_statistics(self):
-        
+
         statistics = self.student_repository.get_student_statistics()
 
         if statistics is None:
             return None
-        
+
         if statistics["average_age"] is None:
             statistics["average_age"] = "N/A"
         else:
             statistics["average_age"] = f"{statistics['average_age']:.1f}"
-        
+
         if statistics["youngest"] is None:
             statistics["youngest"] = "N/A"
 
@@ -186,54 +158,56 @@ class StudentService:
             statistics["oldest"] = "N/A"
 
         return statistics
-    
-    
+
     def export_students(self):
         students = self.student_repository.export_students()
-        
+
         if students is None:
             return False, "Could not export students."
-        
+
         if not students:
             return False, "No students found to export."
-        
+
         if not os.path.exists("exports"):
             os.makedirs("exports", exist_ok=True)
-        
+
         filename = os.path.join("exports", "students.csv")
         try:
             with open(filename, "w", newline="", encoding="utf-8") as file:
                 writer = csv.writer(file)
-                 #Header
-                writer.writerow([
-                "Roll No",
-                "First Name",
-                "Last Name",
-                "Age",
-                "Gender",
-                "Email",
-                "Phone",
-                "Department"
-                ])
-            
-                #Data
+                # Header
+                writer.writerow(
+                    [
+                        "Roll No",
+                        "First Name",
+                        "Last Name",
+                        "Age",
+                        "Gender",
+                        "Email",
+                        "Phone",
+                        "Department",
+                    ]
+                )
+
+                # Data
                 for student in students:
-                    writer.writerow([
-                    student.roll_no,
-                    student.first_name,
-                    student.last_name,
-                    student.age,
-                    student.gender,
-                    student.email,
-                    student.phone,
-                    student.department_name
-                    ])
+                    writer.writerow(
+                        [
+                            student.roll_no,
+                            student.first_name,
+                            student.last_name,
+                            student.age,
+                            student.gender,
+                            student.email,
+                            student.phone,
+                            student.department_name,
+                        ]
+                    )
             return True, f"Students exported successfully to '{filename}'."
-        
+
         except OSError as error:
             logger.error(f"Failed to export students: {error}")
             return False, "Failed to export students."
-
 
     def import_students(self, filename):
 
@@ -242,11 +216,11 @@ class StudentService:
         try:
             with open(filename, "r", newline="", encoding="utf-8") as file:
                 reader = csv.DictReader(file)
-                
+
                 imported = 0
                 skipped = 0
                 failed = 0
-                
+
                 for row in reader:
 
                     roll_no = row["Roll No"]
@@ -313,16 +287,17 @@ class StudentService:
                         continue
                     phone = result
 
-
                     # Get department by name
-                    department = self.department_repository.get_department_by_name(department_name)
+                    department = self.department_repository.get_department_by_name(
+                        department_name
+                    )
 
                     if department is None:
                         failed += 1
                         continue
 
                     department_id = department.id
-                    
+
                     # Create Student object
                     student = Student(
                         roll_no=roll_no,
@@ -332,59 +307,57 @@ class StudentService:
                         gender=gender,
                         email=email,
                         phone=phone,
-                        department_id=department_id
+                        department_id=department_id,
                     )
 
                     success = self.student_repository.add_student(student)
-                    
+
                     if success:
                         imported += 1
                     else:
                         skipped += 1
-                    
+
                 logger.info(
                     f"CSV Import -> Imported: {imported}, "
                     f"Skipped: {skipped}, "
                     f"Failed: {failed}"
                 )
-                
+
                 return (
-                        True,
-                        f"Import completed.\n"
-                        f"Imported: {imported}\n"
-                        f"Skipped: {skipped}\n"
-                        f"Failed: {failed}"
-                    )       
+                    True,
+                    f"Import completed.\n"
+                    f"Imported: {imported}\n"
+                    f"Skipped: {skipped}\n"
+                    f"Failed: {failed}",
+                )
         except KeyError as error:
             logger.error(error)
-            return False, "Invalid CSV format. Please use the exported template." 
-       
+            return False, "Invalid CSV format. Please use the exported template."
+
         except OSError as error:
             logger.error(error)
             return False, "Failed to read CSV file."
-        
+
     def search_students_by_name(self, name):
-        #validate name
+        # validate name
         is_valid, result = validators.validate_name(name)
-        
+
         if not is_valid:
             return False, result
-        
+
         name = result
-        
-        #Call repo 
+
+        # Call repo
         students = self.student_repository.search_students_by_name(name)
-        
+
         if students is None:
             return False, "An error occurred while searching."
-        
+
         if not students:
             return False, "No students found."
-        
-        
+
         return True, students
-    
-    
+
     def search_students_by_department(self, department_name):
 
         department_name = department_name.strip()
@@ -392,7 +365,9 @@ class StudentService:
         if not department_name:
             return False, "Department name cannot be empty."
 
-        students = self.student_repository.search_students_by_department(department_name)
+        students = self.student_repository.search_students_by_department(
+            department_name
+        )
 
         if students is None:
             return False, "An error occurred while searching."
@@ -401,27 +376,26 @@ class StudentService:
             return False, "No students found."
 
         return True, students
-    
+
     def search_students_by_gender(self, gender):
-        
+
         is_valid, result = validators.validate_gender(gender)
-                
+
         if not is_valid:
             return False, result
-                
+
         gender = result
-        
+
         students = self.student_repository.search_students_by_gender(gender)
-        
+
         if students is None:
             return False, "An error occurred while searching."
-                
+
         if not students:
             return False, "No students found."
-                
-                
+
         return True, students
-    
+
     def sort_students(self, sort_by):
         students = self.student_repository.sort_students(sort_by)
 
@@ -432,28 +406,24 @@ class StudentService:
             return False, "No students found."
 
         return True, students
-    
+
     def view_students_paginated(self, page):
-        students = self.student_repository.view_students_paginated(page,self.PAGE_SIZE)
-        
+        students = self.student_repository.view_students_paginated(page, self.PAGE_SIZE)
+
         if students is None:
             return False, "An error occurred while retrieving students."
-        
+
         total_students = self.student_repository.get_total_students()
-        
+
         if total_students is None:
             return False, "An error occurred while retrieving student count."
-        
+
         total_pages = math.ceil(total_students / self.PAGE_SIZE)
-        
+
         if total_pages == 0:
             total_pages = 1
-         
+
         if page < 1 or page > total_pages:
             return False, "Invalid page number."
-         
-        return True, {
-            "students": students,
-            "page": page,
-            "total_pages": total_pages
-        }   
+
+        return True, {"students": students, "page": page, "total_pages": total_pages}

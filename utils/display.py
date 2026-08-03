@@ -9,5 +9,6 @@ def display_student(student):
     print(f"Department : {student.department_name or student.department_id}")
     print("-" * 40 + "\n")
 
+
 def display_department(department):
     print(f"{department.id} - {department.department_name}")

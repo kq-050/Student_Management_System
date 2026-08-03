@@ -1,41 +1,40 @@
 def validate_name(name):
-   name = name.strip()
-   
-   if not name:
-       return False,"Name cannot be Empty!"
-   
-   if not all(char.isalpha() or char.isspace() for char in name):
-       return False, "NName can contain only letters and spaces."
-   
-   if "  " in name:
-       return False, "Name cannot contain multiple consecutive spaces."
-   
-   #Convert to title case:
-   name = " ".join(word.capitalize() for word in name.split())
-   
-   
-   return True,name
+    name = name.strip()
+
+    if not name:
+        return False, "Name cannot be Empty!"
+
+    if not all(char.isalpha() or char.isspace() for char in name):
+        return False, "NName can contain only letters and spaces."
+
+    if "  " in name:
+        return False, "Name cannot contain multiple consecutive spaces."
+
+    # Convert to title case:
+    name = " ".join(word.capitalize() for word in name.split())
+
+    return True, name
 
 
 def validate_roll_no(roll_no):
     roll_no = roll_no.strip()
-    
-    
+
     if not roll_no:
-        return False,"Roll no cannot be Empty!"
-    
+        return False, "Roll no cannot be Empty!"
+
     roll_no = roll_no.upper()
-    
+
     if " " in roll_no:
-        return False,"Roll No cannot contain spaces"
-    
+        return False, "Roll No cannot contain spaces"
+
     if len(roll_no) != 7:
-        return False,"Roll No must be 7 characters."
-    
+        return False, "Roll No must be 7 characters."
+
     if not roll_no.isalnum():
         return False, "Roll No can only contain letters and numbers."
-    
-    return True,roll_no
+
+    return True, roll_no
+
 
 def validate_age(age):
     if age < 18:
@@ -67,44 +66,42 @@ def validate_gender(gender):
 
 def validate_email(email):
     email = email.strip()
-    
+
     if not email:
-        return False,"Email cannot be empty."
-    
+        return False, "Email cannot be empty."
+
     email = email.lower()
-    
-    
+
     if " " in email:
-        return False,"Email cannot contain spaces."
-    
+        return False, "Email cannot contain spaces."
+
     if email.count("@") != 1:
-        return False,"Email must contain exactly one @"
-    
+        return False, "Email must contain exactly one @"
+
     username, domain = email.split("@")
-    
+
     if not username:
-        return False,"Invalid email address."
-    
+        return False, "Invalid email address."
+
     if "." not in domain:
-        return False,"Invalid email address."
-    
-    return True,email
+        return False, "Invalid email address."
+
+    return True, email
 
 
 def validate_phone(phone):
     phone = phone.strip()
-    
+
     if not phone:
-        return False,"Phone Number cannot be empty."
-    
+        return False, "Phone Number cannot be empty."
+
     if not phone.isdigit():
-        return False,"Phone number should contain only digits"
-    
+        return False, "Phone number should contain only digits"
+
     if len(phone) != 11:
-        return False,"Phone number should contain 11 digits."
-    
+        return False, "Phone number should contain 11 digits."
+
     if not phone.startswith("03"):
-        return False,"Phone number must start with 03"
-    
-    return True,phone
-    
+        return False, "Phone number must start with 03"
+
+    return True, phone
