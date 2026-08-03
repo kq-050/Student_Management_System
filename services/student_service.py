@@ -347,8 +347,8 @@ class StudentService:
                     f"Skipped: {skipped}, "
                     f"Failed: {failed}"
                 )
-                if imported == 0:
-                    return (
+                
+                return (
                         True,
                         f"Import completed.\n"
                         f"Imported: {imported}\n"
@@ -373,7 +373,7 @@ class StudentService:
         name = result
         
         #Call repo 
-        students = self.student_repository.search_students_by_name()
+        students = self.student_repository.search_students_by_name(name)
         
         if students is None:
             return False, "An error occurred while searching."

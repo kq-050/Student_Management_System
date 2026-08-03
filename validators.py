@@ -32,6 +32,9 @@ def validate_roll_no(roll_no):
     if len(roll_no) != 7:
         return False,"Roll No must be 7 characters."
     
+    if not roll_no.isalnum():
+        return False, "Roll No can only contain letters and numbers."
+    
     return True,roll_no
 
 def validate_age(age):
